@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>%%sym%% 代币健康度看板 · Kai</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#0e1116; --card:#161a21; --line:#262c36; --text:#ece6da; --text2:#a9a49a; --muted:#7c8088; --gold:#d6aa5a;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s0:#8a8f98; --rest:#383835;
+  --pos:#3987e5; --neg:#e66767; --warn:#fab219; --serious:#ec835a; --good:#0ca30c;
+}
+@media (prefers-color-scheme: light){
+  :root:where(:not([data-theme="dark"])){
+    color-scheme:light; --bg:#f6f5f2; --card:#fcfcfb; --line:#e4e2dc; --text:#0b0b0b; --text2:#52514e; --muted:#77756f; --gold:#9a6b1c;
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s0:#8a8f98; --rest:#dedcd6; --pos:#2a78d6; --neg:#e34948;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 -apple-system,"PingFang SC","Helvetica Neue",sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 48px}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:20px}
+h1{margin:0;font-size:26px;letter-spacing:.5px}
+h1 small{font-size:15px;color:var(--text2);font-weight:400;margin-left:8px}
+.meta{color:var(--muted);font-size:13px;text-align:right}
+.brand{color:var(--gold);font-size:13px;letter-spacing:1px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.k{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kl{color:var(--text2);font-size:12.5px}.kv{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;margin:2px 0}.ks{color:var(--muted);font-size:12px}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:14px}
+h2{font-size:15.5px;margin:0 0 10px}h2 span{color:var(--muted);font-weight:400;font-size:12.5px;margin-left:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid2 section{margin:0}
+ul.flags{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.f{display:flex;gap:8px;align-items:center;font-size:14px}.f .ic{font-size:12px}
+.f.serious .ic{color:var(--serious)}.f.warning .ic{color:var(--warn)}.f.ok .ic{color:var(--good)}
+.stack{display:flex;height:22px;gap:2px;border-radius:4px;overflow:hidden;margin:6px 0 10px}
+.seg{height:100%}.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--text2)}
+.lg i,.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.lg b{color:var(--text);font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{color:var(--muted);font-weight:500;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}tr:last-child td{border-bottom:0}
+.n{text-align:right;font-variant-numeric:tabular-nums}th.n{text-align:right}
+.m{color:var(--muted)}a{color:var(--s1);text-decoration:none}
+.tw{overflow-x:auto}
+svg.chart{width:100%;height:auto;display:block;overflow:visible}
+.grid{stroke:var(--line);stroke-width:1}.base{stroke:var(--muted);stroke-width:1}
+.ax{fill:var(--muted);font-size:10.5px}
+.ln{fill:none;stroke:var(--s1);stroke-width:2;stroke-linejoin:round}
+.xh{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3;opacity:0}.dot{fill:var(--s1);stroke:var(--card);stroke-width:2;opacity:0}
+.hit{fill:transparent}
+#tip{position:fixed;pointer-events:none;background:var(--text);color:var(--bg);font-size:12.5px;padding:5px 8px;border-radius:6px;opacity:0;transition:opacity .1s;z-index:9;white-space:nowrap}
+.note{color:var(--muted);font-size:12.5px;line-height:1.7}
+footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:12.5px;margin-top:18px}
+@media (max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.meta{text-align:left}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><div class="brand">TOKEN HEALTH · 代币健康度</div><h1>%%sym%%<small>%%project%% · Ethereum</small></h1></div>
+  <div class="meta">数据更新于 %%upd%%<br>%%prevnote%%</div>
+</header>
+
+<div class="kpis">%%kpis%%</div>
+
+<section><h2>异常提示<span>规则触发即列出, 只陈述事实</span></h2><ul class="flags">%%flags%%</ul></section>
+
+<section><h2>筹码分布<span>按总供应量, 前 100 持仓地址分类(Blockscout 公开标签)</span></h2>%%stack%%</section>
+
+<div class="grid2">
+  <section><h2>价格 · 7 天<span>Binance 合约标记价, 1 小时</span></h2>%%price%%</section>
+  <section><h2>合约持仓量 · 48 小时<span>美元计</span></h2>%%oi%%</section>
+</div>
+
+<div class="grid2" style="margin-top:14px">
+  <section><h2>资金费率 · 最近 21 期<span><i class="sw" style="background:var(--pos)"></i>多付空 <i class="sw" style="background:var(--neg);margin-left:8px"></i>空付多</span></h2>%%fund%%</section>
+  <section><h2>DEX 流动性<span>Ethereum 上前 5 个池子</span></h2><div class="tw"><table><thead><tr><th>DEX</th><th>交易对</th><th class="n">流动性</th><th class="n">24h 成交</th></tr></thead><tbody>%%dexrows%%</tbody></table></div></section>
+</div>
+
+<section style="margin-top:14px"><h2>前 20 大持仓地址<span>变化 = 与上次快照相比</span></h2>
+<div class="tw"><table><thead><tr><th>#</th><th>地址</th><th>标签</th><th>类别</th><th class="n">持仓</th><th class="n">占供应</th><th class="n">变化</th></tr></thead><tbody>%%rows%%</tbody></table></div></section>
+
+<section><h2>大额转账<span>≥ $%%big%%, 按金额排序前 15 笔 · 实际覆盖最近 %%cov%% 小时</span></h2>
+<div class="tw"><table><thead><tr><th>时间 UTC</th><th>类型</th><th>转出</th><th>转入</th><th class="n">数量</th><th class="n">价值</th><th></th></tr></thead><tbody>%%trows%%</tbody></table></div></section>
+
+<section><h2>数据说明</h2><div class="note">
+来源: Blockscout(持仓、转账、地址标签) · DexScreener(DEX 流动性) · Binance USDⓈ-M 公共接口(价格、持仓量、资金费率)。<br>
+"交易所/项目方"类别来自公开地址标签, 未标注的地址可能同样属于交易所或项目方, 所以这些占比是<b>下限</b>。<br>
+大额转账为分页抓取, 页面标出的覆盖小时数就是实际看到的窗口; 合约地址 <a href="https://eth.blockscout.com/token/%%addr%%" target="_blank" rel="noopener">%%addr%%</a>。<br>
+本页只呈现公开数据, <b>不构成任何投资建议</b>。
+</div></section>
+
+<footer><span>Kai · DELOONG KACHMO PTE. LTD. · Singapore</span><span>为项目方定制私有看板与 7×24 告警, 请在 X 私信</span></footer>
+</div>
+<div id="tip"></div>
+<script>
+const tip=document.getElementById('tip');
+const show=(t,e)=>{tip.textContent=t;tip.style.opacity=1;tip.style.left=Math.min(e.clientX+12,innerWidth-tip.offsetWidth-8)+'px';tip.style.top=(e.clientY-34)+'px'};
+const hide=()=>tip.style.opacity=0;
+document.querySelectorAll('svg.line').forEach(s=>{
+  const pts=JSON.parse(s.dataset.pts),xh=s.querySelector('.xh'),dot=s.querySelector('.dot'),hit=s.querySelector('.hit');
+  hit.addEventListener('mousemove',e=>{
+    const p=s.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const q=p.matrixTransform(s.getScreenCTM().inverse());
+    let b=pts[0];for(const k of pts)if(Math.abs(k[0]-q.x)<Math.abs(b[0]-q.x))b=k;
+    xh.setAttribute('x1',b[0]);xh.setAttribute('x2',b[0]);xh.style.opacity=1;dot.setAttribute('cx',b[0]);dot.setAttribute('cy',b[1]);dot.style.opacity=1;
+    show(b[2]+' · '+b[3],e)});
+  hit.addEventListener('mouseleave',()=>{xh.style.opacity=0;dot.style.opacity=0;hide()});
+});
+document.querySelectorAll('[data-tip]').forEach(el=>{el.addEventListener('mousemove',e=>show(el.dataset.tip,e));el.addEventListener('mouseleave',hide)});
+</script>
+</body>
+</html>
